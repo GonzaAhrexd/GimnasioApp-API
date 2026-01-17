@@ -1,0 +1,17 @@
+model Ejercicio {
+   id_ejercicio  Int      @id @default(autoincrement())
+   nombre       String
+   grupo_muscular String
+   descripcion  String?
+}
+
+model DetalleEjercicio {
+    id_detalle    Int      @id @default(autoincrement())
+    id_dia       Int
+    id_ejercicio  Int
+    series      Int
+    repeticiones Int
+    peso       Float?
+    descanso   Int?
+    observaciones String?
+}

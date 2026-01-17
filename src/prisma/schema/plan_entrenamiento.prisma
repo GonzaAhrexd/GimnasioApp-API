@@ -1,0 +1,15 @@
+model PlanEntrenamiento {
+    id_plan        Int      @id @default(autoincrement())
+    id_cliente    Int
+    nombre         String
+    fecha_inicio DateTime
+    fecha_fin    DateTime
+    observaciones String?
+}
+
+model DiaEntrenamiento {
+    id_dia         Int      @id @default(autoincrement())
+    id_plan        Int
+    numero_dia    String
+}
+

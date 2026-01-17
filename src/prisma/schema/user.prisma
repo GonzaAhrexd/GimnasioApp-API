@@ -1,6 +1,19 @@
-model User {
-  id    Int     @id @default(autoincrement())
+model Usuario {
+  id_usuario    Int     @id @default(autoincrement())
+  nombre  String?
   email String  @unique
-  name  String?
-  dni  String  @unique
+  rol  String  
 }
+
+model Cliente {
+  id_cliente    Int     @id @default(autoincrement())
+  id_usuario  Int     @unique
+  objetivo  String?
+  profesor_asignado  Int?
+}
+
+model Profesor {
+  id_profesor    Int     @id @default(autoincrement())
+  id_usuario  Int     @unique
+}
+
