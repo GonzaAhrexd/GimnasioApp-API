@@ -3,6 +3,8 @@ model Usuario {
   nombre  String?
   email String  @unique
   rol  String  
+  pass String?
+  cambiarPass Boolean @default(true)
 }
 
 model Cliente {
