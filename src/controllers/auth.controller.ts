@@ -26,45 +26,15 @@ function generateSecurePassword(length: number = 8): string {
 }
 
 const hashPassword = async (password: string): Promise<string> => {
-    const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
-    return hashedPassword;
+    console.log(SALT_ROUNDS)
+    try{
+        const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+        return hashedPassword;
+    }catch(error){
+        console.log(error)
+        throw new Error('Error hashing password');
+    }
 }
-
-const comparePassword = async (password: string, hashedPassword: string): Promise<boolean> => {
-    const isMatch = await bcrypt.compare(password, hashedPassword);
-    return isMatch;
-}
-
-
-// export const verifyToken = async (req, res) => {
-    // Obtiene el token de la cookie
-    // const { token } = req.cookies
-
-    // console.log(req.cookies)
-
-    // Si no hay token, devuelve un mensaje de error
-    // if (!token) {
-    //     return res.status(401).json({ message: 'No hay token' })
-    // }
-
-    // // Verifica el token con el método verify de jwt
-    // jwt.verify(token, TOKEN_SECRET, async (err, user) => {
-    //     // Si hay un error, devuelve un mensaje de error
-    //     if (err) return res.status(401).json({ message: "No autorizado" })
-    //     // Busca el usuario en la base de datos
-    //     const userFound = await prisma.usuario.findUnique({
-    //         where: { id_usuario: Number((user as any).id) }
-    //     })
-
-    //     // Si no encuentra el usuario, devuelve un mensaje de error
-    //     if (!userFound) return res.status(401).json({ message: "No autorizado" })
-    //     // Devuelve los datos del usuario
-    //     return res.json({
-    //         user: userFound
-    //     })
-    // })
-// }
-
 
 
 export const loginUser = async (req, res) => {
@@ -190,3 +160,68 @@ export const registerUser = async (req, res) => {
 }
 
 
+export const changePassUserFirstLogin = async (req, res) => {
+
+    try{
+        const { id_usuario } = req.params;
+        const { currentPassword, newPassword } = req.body;
+
+        console.log(currentPassword)
+        const user = await prisma.usuario.findUnique({
+            where: { id_usuario: Number(id_usuario) }
+        });
+
+        // Verifica si la contraseña actual es correcta
+        const isPassMatched = await bcrypt.compare(currentPassword, user?.pass)
+        if (!isPassMatched) return res.status(400).json({ message: 'Contraseña actual incorrecta' })
+
+
+            
+        const hashedNewPassword = await hashPassword(newPassword);
+        
+        
+        await prisma.usuario.update({
+            where: { id_usuario: Number(id_usuario) },
+            data: {
+                pass: hashedNewPassword,
+                cambiarPass: false
+            }
+        });
+        
+        return res.status(200).json({ message: 'Password changed successfully', user: user });
+
+    }catch(error){
+        console.log(error)
+        return res.status(500).json({ message: 'Server error' });
+    }
+
+
+
+
+}
+
+export const resetPassword = async (req, res) => {
+    try {
+        const { id_usuario } = req.params;
+
+        const newSecurePassword = generateSecurePassword(12);
+        const hashedNewPassword = await hashPassword(newSecurePassword);
+
+        await prisma.usuario.update({
+            where: { id_usuario: Number(id_usuario) },
+            data: {
+                pass: hashedNewPassword,
+                cambiarPass: true
+            }
+        });
+
+
+        return res.status(200).json({ message: 'Password reset successfully', newPassword: newSecurePassword });
+    }
+    catch(error){
+        console.log(error)
+
+        throw new Error('Server error');
+    }
+
+}
