@@ -23,11 +23,11 @@ export const createUser = async (req: any, res: any) => {
 
 export const editUser = async (req: any, res: any) => {
     try {
-        const { id_usuario } = req.params; 
+        const { id_usuario } = req.params;
 
         console.log(req.body)
         const updatedUser = await prisma.usuario.update({
-            where: { id_usuario: Number(id_usuario) }, 
+            where: { id_usuario: Number(id_usuario) },
             data: req.body
         });
         res.status(200).json(updatedUser);
@@ -57,9 +57,48 @@ export const deleteUser = async (req: any, res: any) => {
         await prisma.usuario.delete({
             where: { id_usuario: Number(id_usuario) }
         });
-        res.status(204).send(); 
+        res.status(204).send();
     } catch (error) {
         res.status(500).json({ message: 'Error deleting user', error });
     }
 }
 
+export const advanceSearchUsers = async (req: any, res: any) => {
+    try {
+
+        const { email, nombre, rol, cambiarPass } = req.body;
+        // Haz una query para buscar con prisma, si se deja como vacío que no se busque
+
+        console.log(req.body)
+        const users = await prisma.usuario.findMany({
+            where: {
+                // Solo se agregan si tienen valor (no son null, undefined o "")
+                ...(email && {
+                    email: {
+                        contains: email,
+                    },
+                    ...nombre && {
+                        nombre: {
+                            contains: nombre,
+                        }
+                    },
+                    ...rol && {
+                        rol: rol
+                    },
+                    ...cambiarPass && {
+                        cambiarPass: cambiarPass 
+                    }
+                }),
+            }
+        });
+
+        res.status(200).json(users);
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ message: 'Error searching users', error });
+
+    }
+
+
+}
