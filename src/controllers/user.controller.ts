@@ -67,12 +67,9 @@ export const advanceSearchUsers = async (req: any, res: any) => {
     try {
 
         const { email, nombre, rol, cambiarPass } = req.body;
-        // Haz una query para buscar con prisma, si se deja como vacío que no se busque
 
-        console.log(req.body)
         const users = await prisma.usuario.findMany({
             where: {
-                // Solo se agregan si tienen valor (no son null, undefined o "")
                 ...(email && {
                     email: {
                         contains: email,

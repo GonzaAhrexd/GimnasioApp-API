@@ -37,3 +37,20 @@ export const isAdmin = (req, res, next) => {
         next();
     });
 };
+
+export const isProfesorOrAdmin = (req, res, next) => {
+    const { token } = req.cookies;
+    if (!token) {
+        return res.status(401).json({ message: 'No token provided' });
+    }
+    jwt.verify(token, TOKEN_SECRET, (err, decoded) => {
+        if (err) {
+            return res.status(401).json({ message: 'Unauthorized' });
+        }
+        if ((decoded as any).rol !== 'admin' && (decoded as any).rol !== 'profesor') {
+            return res.status(403).json({ message: 'Forbidden: Professors or Admins only' });
+        }
+
+        next();
+    });
+};

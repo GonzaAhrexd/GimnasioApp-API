@@ -8,6 +8,7 @@ import corsOptions from './configs/CorsOptions';
 // Routes
 import userRoutes from './routes/user.routes';
 import authRoutes from './routes/auth.routes';
+import profesoresRoutes from './routes/professor.routes'
 dotenv.config(); // Load environment variables from .env file
 
 // Start Express application
@@ -22,6 +23,7 @@ app.use(express.urlencoded({ limit: '10mb', extended: true }));
     
 // Define routes
 app.use('/api/users', userRoutes)
+app.use('/api/profesores', profesoresRoutes)
 app.use('/api', authRoutes)
 
 // Start the server
