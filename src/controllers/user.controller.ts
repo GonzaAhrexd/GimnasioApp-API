@@ -1,4 +1,3 @@
-
 import prisma from '../configs/db'; // Ruta simple al archivo db.ts
 
 export const getUser = async (req: any, res: any) => {
@@ -53,10 +52,8 @@ export const changeRol = async (req: any, res: any) => {
 export const deleteUser = async (req: any, res: any) => {
     try {
         const { id_usuario } = req.params;
-
-        await prisma.usuario.delete({
-            where: { id_usuario: Number(id_usuario) }
-        });
+        const userId = Number(id_usuario);
+        await prisma.usuario.delete({ where: { id_usuario: userId } });
         res.status(204).send();
     } catch (error) {
         res.status(500).json({ message: 'Error deleting user', error });

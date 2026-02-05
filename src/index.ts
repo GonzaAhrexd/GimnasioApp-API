@@ -9,6 +9,12 @@ import corsOptions from './configs/CorsOptions';
 import userRoutes from './routes/user.routes';
 import authRoutes from './routes/auth.routes';
 import profesoresRoutes from './routes/professor.routes'
+
+// Swagger
+import swaggerUi from 'swagger-ui-express';
+import swaggerFile from './swagger-output.json'; 
+
+
 dotenv.config(); // Load environment variables from .env file
 
 // Start Express application
@@ -22,15 +28,18 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
     
 // Define routes
+// #swagger.tags = ['Users', 'Profesores', 'Auth']
 app.use('/api/users', userRoutes)
 app.use('/api/profesores', profesoresRoutes)
 app.use('/api', authRoutes)
-
+// Swagger documentation route
+app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 // Start the server
 const port = process.env.PORT || 3000; // Server port from environment variables or default to 3000
 
 app.listen(port, () => {
-    console.log(`Server is running on port ${port} 🚀`);
+    console.log(`Servidor corriendo en puerto ${port} 🚀`);
+    console.log('Documentación en /doc 📚')
 }).on('error', (error: Error) => {
     console.error('Error starting the server:', error);
 });
